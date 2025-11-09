@@ -62,7 +62,7 @@ public class PlayerStats : MonoBehaviour, IReadOnlyPlayerStats, IDamageable
             var go = GameObject.FindGameObjectWithTag("PlayerSpawnPosition");
             if (go) spawnPoint = go.transform;
         }
-        playerModel = GetComponentInChildren<Animator>(true).gameObject;
+        //playerModel = GetComponentInChildren<Animator>(true).gameObject;
         ResetPlayer();
     }
 

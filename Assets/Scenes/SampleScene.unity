@@ -433,16 +433,6 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
-  - first: {x: 2, y: 0, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
   - first: {x: 6, y: 0, z: 0}
     second:
       serializedVersion: 2
@@ -585,13 +575,13 @@ Tilemap:
       m_AllTileFlags: 1073741825
   m_AnimatedTiles: {}
   m_TileAssetArray:
-  - m_RefCount: 37
+  - m_RefCount: 36
     m_Data: {fileID: 11400000, guid: 6fa6e3e8a6723c04aa9d7328eb8dff51, type: 2}
   m_TileSpriteArray:
-  - m_RefCount: 37
+  - m_RefCount: 36
     m_Data: {fileID: 1244379312, guid: 059d46cb338407a41a1a3c0f1059c4b7, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 37
+  - m_RefCount: 36
     m_Data:
       e00: 1
       e01: 0
@@ -610,7 +600,7 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 37
+  - m_RefCount: 36
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
@@ -1834,12 +1824,18 @@ MonoBehaviour:
   wallMapName: Walls
   furnitureMapName: Furniture
   floorMapName: Ground
-  wallLayer: 1
-  furnitureLayer: 3
-  floorLayer: 2
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  furnitureLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  floorLayer:
+    serializedVersion: 2
+    m_Bits: 0
   colliderDepth: 1.68
-  markStatic: 1
   fallbackToFullCell: 1
+  markStatic: 1
 --- !u!4 &2008455740
 Transform:
   m_ObjectHideFlags: 0
@@ -1873,7 +1869,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 367848115972154504, guid: 1920f55bf8482834f973da472de27694, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.636
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 367848115972154504, guid: 1920f55bf8482834f973da472de27694, type: 3}
       propertyPath: m_LocalRotation.w
