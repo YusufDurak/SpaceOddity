@@ -148,10 +148,12 @@ GameObject:
   - component: {fileID: 367848115972154504}
   - component: {fileID: 4728758489984090055}
   - component: {fileID: -8741948942835117998}
+  - component: {fileID: 8009919672092295605}
   - component: {fileID: 7834162367539974260}
   - component: {fileID: 3949240627088367034}
   - component: {fileID: 3570333126091041076}
   - component: {fileID: 6574014533960829758}
+  - component: {fileID: 4592060821227801483}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -257,6 +259,31 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 120
   m_CollisionDetection: 0
+--- !u!114 &8009919672092295605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2679632397089997006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1031815755
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &7834162367539974260
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,12 +296,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cdd2d4e1e55fc44ba25a417c8fe0a50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   baseMoveSpeed: 5
   moveSpeedMultiplier: 1
   baseMaxHealth: 100
   maxHealthOverflowClamp: 1000
-  currentHealth: 0
-  isDead: 0
   playerModel: {fileID: 2679632397089997006}
 --- !u!114 &3949240627088367034
 MonoBehaviour:
@@ -288,6 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10aa19354e6d2e646bc63b0e2808964c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   stats: {fileID: 7834162367539974260}
   lockZToInitial: 1
   useGravity: 0
@@ -324,5 +351,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa91230bb3e9da4eb4817a3656fc4a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentRole: 0
-  isAnyItemEquiped: 0
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &4592060821227801483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2679632397089997006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkTransformExpanded: 0
+  AutoOwnerAuthorityTickOffset: 1
+  PositionInterpolationType: 0
+  RotationInterpolationType: 0
+  ScaleInterpolationType: 0
+  PositionLerpSmoothing: 1
+  PositionMaxInterpolationTime: 0.1
+  RotationLerpSmoothing: 1
+  RotationMaxInterpolationTime: 0.1
+  ScaleLerpSmoothing: 1
+  ScaleMaxInterpolationTime: 0.1
+  AuthorityMode: 0
+  TickSyncChildren: 0
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  SwitchTransformSpaceWhenParented: 0
+  Interpolate: 1
+  SlerpPosition: 0

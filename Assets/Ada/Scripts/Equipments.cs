@@ -1,10 +1,15 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class Equipments : MonoBehaviour
+[RequireComponent(typeof(NetworkObject))]
+public class Equipments : NetworkBehaviour
 {
-  
     public string itemName;
     public RoleType assignedRole;
-    public bool isEquipped = false;
-}
 
+    public NetworkVariable<bool> isEquipped = new NetworkVariable<bool>(
+        false,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+}

@@ -1,6 +1,16 @@
 using UnityEngine;
 using System.Collections;
-public class SpaceShipController : MonoBehaviour
+using Unity.Netcode;
+
+/// <summary>
+/// Ship controller with network synchronization.
+/// NetworkTransform component is required and should be configured to sync Rigidbody position/rotation.
+/// Movement is server-authoritative - only the current pilot can send input to the server.
+/// </summary>
+[RequireComponent(typeof(NetworkObject))]
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Unity.Netcode.Components.NetworkTransform))]
+public class SpaceShipController : NetworkBehaviour
 {
     [Header("Ship Settings")]
     public float moveSpeed = 10f;
@@ -8,75 +18,175 @@ public class SpaceShipController : MonoBehaviour
     public Transform helmSeat; // The exact center of the helm
     
 
-    [HideInInspector] public bool isControlled = false;
-    [HideInInspector] public PlayerEquipmentManager currentPilot;
+    // Network synchronized control state
+    private NetworkVariable<bool> isControlled = new NetworkVariable<bool>(
+        false,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+    
+    private NetworkVariable<ulong> currentPilotId = new NetworkVariable<ulong>(
+        0,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+
+    public bool IsControlled => isControlled.Value;
+    public PlayerEquipmentManager CurrentPilot { get; private set; }
 
     private Rigidbody rb;
+    private Vector2 input;
 
-    void Start()
+    public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
+        
         rb = GetComponent<Rigidbody>();
         rb.useGravity = false;
         rb.constraints = RigidbodyConstraints.FreezePositionZ |
                          RigidbodyConstraints.FreezeRotationX |
                          RigidbodyConstraints.FreezeRotationY;
+        
+        // Subscribe to control state changes
+        isControlled.OnValueChanged += OnControlStateChanged;
+        currentPilotId.OnValueChanged += OnPilotChanged;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        isControlled.OnValueChanged -= OnControlStateChanged;
+        currentPilotId.OnValueChanged -= OnPilotChanged;
+        base.OnNetworkDespawn();
+    }
+
+    private void OnControlStateChanged(bool oldValue, bool newValue)
+    {
+        // Handle control state changes if needed
+    }
+
+    private void OnPilotChanged(ulong oldPilotId, ulong newPilotId)
+    {
+        // Update current pilot reference
+        if (newPilotId != 0 && NetworkManager.SpawnManager.SpawnedObjects.ContainsKey(newPilotId))
+        {
+            NetworkObject pilotNetObj = NetworkManager.SpawnManager.SpawnedObjects[newPilotId];
+            CurrentPilot = pilotNetObj.GetComponent<PlayerEquipmentManager>();
+        }
+        else
+        {
+            CurrentPilot = null;
+        }
     }
 
     void Update()
     {
-        if (!isControlled) return;
+        // Only current pilot can control the ship
+        if (!isControlled.Value || CurrentPilot == null) return;
+        
+        // Check if local client is the pilot's owner
+        if (NetworkManager.Singleton == null || CurrentPilot.OwnerClientId != NetworkManager.Singleton.LocalClientId) return;
 
         float moveInput = Input.GetAxis("Vertical");
         float turnInput = Input.GetAxis("Horizontal");
+        
+        input = new Vector2(moveInput, turnInput);
+        
+        // Send input to server for authoritative movement
+        MoveShipServerRpc(input);
+    }
+    
+    private void FixedUpdate()
+    {
+        // Only server applies movement (authoritative server)
+        if (!IsServer) return;
+        if (!isControlled.Value) return;
 
         // --- Move the ship ---
-        if (moveInput != 0f)
-            rb.MovePosition(transform.position + transform.up * moveInput * moveSpeed * Time.deltaTime);
+        if (input.x != 0f)
+            rb.MovePosition(transform.position + transform.up * input.x * moveSpeed * Time.fixedDeltaTime);
 
-        if (turnInput != 0f)
-            rb.MoveRotation(rb.rotation * Quaternion.Euler(0, 0, -turnInput * rotationSpeed * Time.deltaTime));
+        if (input.y != 0f)
+            rb.MoveRotation(rb.rotation * Quaternion.Euler(0, 0, -input.y * rotationSpeed * Time.fixedDeltaTime));
 
         // --- Freeze the ship completely if no input ---
-        if (moveInput == 0f && turnInput == 0f)
+        if (input.x == 0f && input.y == 0f)
         {
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
         }
     }
-
-
-    public void EnableControl(bool state, PlayerEquipmentManager pilot)
+    
+    [ServerRpc(RequireOwnership = false)]
+    private void MoveShipServerRpc(Vector2 moveInput, ServerRpcParams rpcParams = default)
     {
-        isControlled = state;
+        // Only allow movement if controlled and the requesting client is the pilot
+        if (!isControlled.Value || CurrentPilot == null) return;
+        
+        // Verify the requesting client is the pilot's owner
+        ulong clientId = rpcParams.Receive.SenderClientId;
+        if (CurrentPilot.OwnerClientId != clientId) return;
+        
+        input = moveInput;
+    }
+
+
+    [ServerRpc(RequireOwnership = false)]
+    public void EnableControlServerRpc(bool state, ulong pilotNetworkObjectId)
+    {
+        EnableControl(state, pilotNetworkObjectId);
+    }
+    
+    public void EnableControl(bool state, ulong pilotNetworkObjectId)
+    {
+        // Only server can enable/disable control
+        if (!IsServer) return;
+
+        isControlled.Value = state;
 
         if (state)
         {
-            currentPilot = pilot;
+            if (pilotNetworkObjectId != 0 && NetworkManager.SpawnManager.SpawnedObjects.ContainsKey(pilotNetworkObjectId))
+            {
+                NetworkObject pilotNetObj = NetworkManager.SpawnManager.SpawnedObjects[pilotNetworkObjectId];
+                PlayerEquipmentManager pilot = pilotNetObj.GetComponent<PlayerEquipmentManager>();
+                
+                if (pilot != null)
+                {
+                    currentPilotId.Value = pilotNetworkObjectId;
+                    CurrentPilot = pilot;
 
-            // Stop any running movement coroutines before starting a new one
-            StopAllCoroutines();
-            StartCoroutine(MovePlayerToHelm(pilot));
+                    // Stop any running movement coroutines before starting a new one
+                    StopAllCoroutines();
+                    StartCoroutine(MovePlayerToHelm(pilot));
 
-            // Freeze player Rigidbody to lock movement
-            var playerRb = pilot.GetComponent<Rigidbody>();
-            if (playerRb)
-                playerRb.constraints = RigidbodyConstraints.FreezeAll;
+                    // Freeze player Rigidbody to lock movement
+                    var playerRb = pilot.GetComponent<Rigidbody>();
+                    if (playerRb)
+                        playerRb.constraints = RigidbodyConstraints.FreezeAll;
+                }
+            }
         }
         else
         {
-            // --- UNLOCK PLAYER POSITION ---
-            pilot.transform.SetParent(null);
+            if (CurrentPilot != null)
+            {
+                // --- UNLOCK PLAYER POSITION ---
+                CurrentPilot.transform.SetParent(null);
 
-            Vector3 exitPos = helmSeat.position + transform.up * -1.5f;
-            exitPos.z = pilot.transform.position.z; // keep Z same
-            pilot.transform.position = exitPos;
+                Vector3 exitPos = helmSeat.position + transform.up * -1.5f;
+                exitPos.z = CurrentPilot.transform.position.z; // keep Z same
+                CurrentPilot.transform.position = exitPos;
 
-            // Unfreeze player Rigidbody
-            var playerRb = pilot.GetComponent<Rigidbody>();
-            if (playerRb)
-                playerRb.constraints = RigidbodyConstraints.FreezeRotation;
+                // Unfreeze player Rigidbody
+                var playerRb = CurrentPilot.GetComponent<Rigidbody>();
+                if (playerRb)
+                    playerRb.constraints = RigidbodyConstraints.FreezeRotation;
 
-            currentPilot = null;
+                CurrentPilot = null;
+            }
+            
+            currentPilotId.Value = 0;
+            input = Vector2.zero;
         }
     }
 

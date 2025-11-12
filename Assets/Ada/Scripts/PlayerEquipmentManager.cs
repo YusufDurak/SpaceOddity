@@ -1,4 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
+using Unity.Netcode;
+
 public enum RoleType
 {
     None,
@@ -8,98 +10,137 @@ public enum RoleType
     Mechanic
 }
 
-public class PlayerEquipmentManager : MonoBehaviour
-
-
+[RequireComponent(typeof(NetworkObject))]
+public class PlayerEquipmentManager : NetworkBehaviour
 {
-    public RoleType currentRole = RoleType.None;
-    public bool isAnyItemEquiped = false;
-    private Equipments equipments;
+    // === Network Variables ===
+    private NetworkVariable<RoleType> currentRole = new NetworkVariable<RoleType>(
+        RoleType.None,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
 
-    private void Update()
+    private NetworkVariable<bool> isAnyItemEquipped = new NetworkVariable<bool>(
+        false,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+
+    // === Local References ===
+    private Equipments equippedItem;
+
+    public RoleType CurrentRole => currentRole.Value;
+    public bool IsAnyItemEquipped => isAnyItemEquipped.Value;
+
+    // === Network Lifecycle ===
+    public override void OnNetworkSpawn()
     {
-        // Check if player presses E
-        if (Input.GetKeyDown(KeyCode.E) && isAnyItemEquiped == false)
-        {
-            TryEquipNearbyItem();
-        }
-        else if ( Input.GetKeyDown(KeyCode.E) && isAnyItemEquiped == true )
-        {
+        base.OnNetworkSpawn();
 
-            UnequipItem();
-        }
-                    
-       
-        
+        currentRole.OnValueChanged += OnRoleChanged;
+        isAnyItemEquipped.OnValueChanged += OnEquipStateChanged;
     }
 
+    public override void OnNetworkDespawn()
+    {
+        currentRole.OnValueChanged -= OnRoleChanged;
+        isAnyItemEquipped.OnValueChanged -= OnEquipStateChanged;
+        base.OnNetworkDespawn();
+    }
+
+    // === Update Loop ===
+    private void Update()
+    {
+        Debug.Log($"IsOwner: {IsOwner}");
+        
+        if (!IsOwner) return;
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (!isAnyItemEquipped.Value)
+            {
+                TryEquipNearbyItem();
+            }
+            else
+            {
+                UnequipItemRpc(); // modern RPC çağrısı
+            }
+        }
+    }
+
+    // === Item Detection ===
     private void TryEquipNearbyItem()
     {
-        // Cast a small sphere around the player to find nearby items
-        float radius = 2f; // interaction range
+        float radius = 2f;
         Collider[] hits = Physics.OverlapSphere(transform.position, radius);
 
         foreach (Collider hit in hits)
         {
             Equipments item = hit.GetComponent<Equipments>();
-            if (item != null)
+            if (item != null && !item.isEquipped.Value)
             {
-                // Equip if not equipped
-                if (equipments == null || equipments != item)
-                {
-                    EquipItem(item);
-                }
-                // Unequip if same item
-                else
-                {
-                    UnequipItem();
-                }
+                EquipItemRpc(item.GetComponent<NetworkObject>().NetworkObjectId);
                 return;
             }
         }
     }
 
-    private void EquipItem(Equipments item)
+    // === RPC Methods ===
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    private void EquipItemRpc(ulong itemNetworkObjectId)
     {
-        equipments = item;
-        currentRole = item.assignedRole;
-        item.isEquipped = true;
-        isAnyItemEquiped = true;
+        if (!NetworkManager.SpawnManager.SpawnedObjects.ContainsKey(itemNetworkObjectId))
+            return;
 
-        Debug.Log($"Equipped {item.itemName} ? Role: {currentRole}");
-        ApplyRoleVisuals();
+        NetworkObject itemNetObj = NetworkManager.SpawnManager.SpawnedObjects[itemNetworkObjectId];
+        if (itemNetObj == null) return;
+
+        Equipments item = itemNetObj.GetComponent<Equipments>();
+        if (item == null || item.isEquipped.Value) return;
+
+        equippedItem = item;
+        item.isEquipped.Value = true;
+        isAnyItemEquipped.Value = true;
+        currentRole.Value = item.assignedRole;
+
+        Debug.Log($"[Server] {OwnerClientId} equipped {item.itemName} as {currentRole.Value}");
     }
 
-    private void UnequipItem()
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    private void UnequipItemRpc()
     {
-        if (equipments != null)
+        if (equippedItem != null)
         {
-            Debug.Log($"Unequipped {equipments.itemName}");
-            equipments.isEquipped = false;
-            isAnyItemEquiped = false;
-
+            equippedItem.isEquipped.Value = false;
+            Debug.Log($"[Server] {OwnerClientId} unequipped {equippedItem.itemName}");
+            equippedItem = null;
         }
 
-        equipments = null;
-        currentRole = RoleType.None;
-        RemoveRoleVisuals();
+        isAnyItemEquipped.Value = false;
+        currentRole.Value = RoleType.None;
+    }
+
+    // === Value Change Callbacks ===
+    private void OnRoleChanged(RoleType oldRole, RoleType newRole)
+    {
+        Debug.Log($"[Client {OwnerClientId}] Role changed: {oldRole} → {newRole}");
         
     }
 
-    private void ApplyRoleVisuals()
+    private void OnEquipStateChanged(bool oldValue, bool newValue)
     {
-        // Example visuals or effects
-        // e.g., change player color, hat model, etc.
+        Debug.Log($"[Client {OwnerClientId}] Equip state: {oldValue} → {newValue}");
     }
 
-    private void RemoveRoleVisuals()
-    {
-        // Reset visuals if needed
-    }
+    // === Visuals / FX ===
+   
 
+  
+
+    // === Gizmos ===
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, 2f); // Draw interaction radius
+        Gizmos.DrawWireSphere(transform.position, 2f);
     }
 }

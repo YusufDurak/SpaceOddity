@@ -1,8 +1,15 @@
 using UnityEngine;
+using Unity.Netcode;
 
+/// <summary>
+/// Player movement controller with network synchronization.
+/// NetworkTransform component is required and should be configured to sync Rigidbody position/rotation.
+/// </summary>
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerStats))]
-public class PlayerMovement : MonoBehaviour
+[RequireComponent(typeof(NetworkObject))]
+[RequireComponent(typeof(Unity.Netcode.Components.NetworkTransform))]
+public class PlayerMovement : NetworkBehaviour
 {
     [Header("References")]
     [SerializeField] private PlayerStats stats;
@@ -17,6 +24,18 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private Vector2 input;
     private float zLock;     // (Gemini) yLock'tan zLock'a geri değiştirildi
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        
+        // Configure rigidbody on spawn
+        if (rb == null) rb = GetComponent<Rigidbody>();
+        if (stats == null) stats = GetComponent<PlayerStats>();
+        
+        zLock = transform.position.z;
+        ConfigureRigidbody();
+    }
 
     private void Awake()
     {
@@ -43,6 +62,27 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        // Check if we can control movement
+        // Allow movement if:
+        // 1. Not networked (no NetworkManager or not connected)
+        // 2. Networked but not spawned as NetworkObject (testing/editor)
+        // 3. Networked and spawned, but we're the owner
+        bool canControl = true;
+        
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsClient)
+        {
+            // We're in networked mode
+            if (IsSpawned)
+            {
+                // Object is spawned as NetworkObject, only owner can control
+                canControl = IsOwner;
+            }
+            // If not spawned, allow control (for testing)
+        }
+        // If not networked, allow control
+        
+        if (!canControl) return;
+
         // Read WASD
         Vector2 dir = Vector2.zero;
         if (Input.GetKey(KeyCode.A)) dir.x -= 1f;
@@ -56,6 +96,27 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Check if we can control movement
+        // Allow movement if:
+        // 1. Not networked (no NetworkManager or not connected)
+        // 2. Networked but not spawned as NetworkObject (testing/editor)
+        // 3. Networked and spawned, but we're the owner
+        bool canControl = true;
+        
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsClient)
+        {
+            // We're in networked mode
+            if (IsSpawned)
+            {
+                // Object is spawned as NetworkObject, only owner can control
+                canControl = IsOwner;
+            }
+            // If not spawned, allow control (for testing)
+        }
+        // If not networked, allow control
+        
+        if (!canControl) return;
+
         // Hedef hızı PlayerStats'tan al
         float targetSpeed = (stats != null) ? stats.CurrentMoveSpeed : 5f;
 
