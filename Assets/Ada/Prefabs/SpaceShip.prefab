@@ -3382,7 +3382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3556781154
+  GlobalObjectIdHash: 3576671294
   InScenePlacedSourceGlobalObjectIdHash: 2538169523
   DeferredDespawnTick: 0
   Ownership: 1
@@ -3588,7 +3588,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2728654268
+  GlobalObjectIdHash: 1613942571
   InScenePlacedSourceGlobalObjectIdHash: 2538169523
   DeferredDespawnTick: 0
   Ownership: 1
@@ -3741,7 +3741,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3326411677
+  GlobalObjectIdHash: 2439282536
   InScenePlacedSourceGlobalObjectIdHash: 2538169523
   DeferredDespawnTick: 0
   Ownership: 1
@@ -5244,7 +5244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1281914093
+  GlobalObjectIdHash: 3786536192
   InScenePlacedSourceGlobalObjectIdHash: 2538169523
   DeferredDespawnTick: 0
   Ownership: 1
@@ -6132,7 +6132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2668980864
+  GlobalObjectIdHash: 228829598
   InScenePlacedSourceGlobalObjectIdHash: 2538169523
   DeferredDespawnTick: 0
   Ownership: 1
@@ -6466,7 +6466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2538169523
+  GlobalObjectIdHash: 934703934
   InScenePlacedSourceGlobalObjectIdHash: 2538169523
   DeferredDespawnTick: 0
   Ownership: 1
@@ -6493,7 +6493,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   moveSpeed: 10
-  rotationSpeed: 80
+  rotationSpeed: 2
   helmSeat: {fileID: 6453643626752990325}
 --- !u!54 &6759260436032532178
 Rigidbody:
@@ -6503,7 +6503,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9164518622672289818}
   serializedVersion: 4
-  m_Mass: 1999
+  m_Mass: 100
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -6586,7 +6586,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4046014378289023421, guid: 3c8d53bfb24fc34458b8d3a17dd81662, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.3616557
+      value: 3.8800006
       objectReference: {fileID: 0}
     - target: {fileID: 4046014378289023421, guid: 3c8d53bfb24fc34458b8d3a17dd81662, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6630,7 +6630,7 @@ PrefabInstance:
       objectReference: {fileID: 3979449618219765757}
     - target: {fileID: 5129989233547198790, guid: 3c8d53bfb24fc34458b8d3a17dd81662, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3356602537
+      value: 3179708116
       objectReference: {fileID: 0}
     - target: {fileID: 5129989233547198790, guid: 3c8d53bfb24fc34458b8d3a17dd81662, type: 3}
       propertyPath: SceneMigrationSynchronization
@@ -6730,7 +6730,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4046014378289023421, guid: 3c8d53bfb24fc34458b8d3a17dd81662, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.3616557
+      value: 3.88
       objectReference: {fileID: 0}
     - target: {fileID: 4046014378289023421, guid: 3c8d53bfb24fc34458b8d3a17dd81662, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6774,7 +6774,7 @@ PrefabInstance:
       objectReference: {fileID: 3037888056763546436}
     - target: {fileID: 5129989233547198790, guid: 3c8d53bfb24fc34458b8d3a17dd81662, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 967188415
+      value: 2291915241
       objectReference: {fileID: 0}
     - target: {fileID: 5129989233547198790, guid: 3c8d53bfb24fc34458b8d3a17dd81662, type: 3}
       propertyPath: SceneMigrationSynchronization
