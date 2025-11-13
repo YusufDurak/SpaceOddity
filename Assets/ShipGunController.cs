@@ -67,7 +67,8 @@ public class ShipGunController : NetworkBehaviour
         // (controlling client updates locally for immediate feedback)
         if (!isControllingGun && gunPivot != null)
         {
-            gunPivot.rotation = Quaternion.Euler(0f, 0f, newRotation);
+            // Apply rotation in local space
+            gunPivot.localRotation = Quaternion.Euler(0f, 0f, newRotation);
         }
     }
 
@@ -79,9 +80,29 @@ public class ShipGunController : NetworkBehaviour
             NetworkObject playerNetObj = NetworkManager.SpawnManager.SpawnedObjects[newPlayerId];
             CurrentPlayer = playerNetObj.GetComponent<PlayerEquipmentManager>();
             isControllingGun = CurrentPlayer != null && CurrentPlayer.OwnerClientId == NetworkManager.Singleton.LocalClientId;
+            
+            // Disable movement on client side as well
+            if (isControllingGun && CurrentPlayer != null)
+            {
+                PlayerMovement playerMovement = CurrentPlayer.GetComponent<PlayerMovement>();
+                if (playerMovement != null)
+                {
+                    playerMovement.SetMovementDisabled(true);
+                }
+            }
         }
         else
         {
+            // Re-enable movement when no longer controlling
+            if (CurrentPlayer != null)
+            {
+                PlayerMovement playerMovement = CurrentPlayer.GetComponent<PlayerMovement>();
+                if (playerMovement != null)
+                {
+                    playerMovement.SetMovementDisabled(false);
+                }
+            }
+            
             CurrentPlayer = null;
             isControllingGun = false;
         }
@@ -130,22 +151,42 @@ public class ShipGunController : NetworkBehaviour
             PlayerEquipmentManager playerManager = playerNetObj.GetComponent<PlayerEquipmentManager>();
             
             if (playerManager != null && playerManager.CurrentRole == RoleType.Gunner)
-        {
+            {
                 controllingPlayerId.Value = playerNetworkObjectId;
                 CurrentPlayer = playerManager;
                 
-                // Move player to gun seat
-            Vector3 newPosition = gunSeatPoint.position;
-                newPosition.z = playerManager.transform.position.z;
-                playerManager.transform.position = newPosition;
+                // Disable player movement
+                PlayerMovement playerMovement = playerManager.GetComponent<PlayerMovement>();
+                if (playerMovement != null)
+                {
+                    playerMovement.SetMovementDisabled(true);
+                }
+                
+                // Freeze player Rigidbody
+                Rigidbody playerRb = playerManager.GetComponent<Rigidbody>();
+                if (playerRb != null)
+                {
+                    playerRb.constraints = RigidbodyConstraints.FreezeAll;
+                    playerRb.linearVelocity = Vector3.zero;
+                    playerRb.angularVelocity = Vector3.zero;
+                }
+                
+                // Move player to gun seat and parent to it
+                if (gunSeatPoint != null)
+                {
+                    Vector3 newPosition = gunSeatPoint.position;
+                    newPosition.z = playerManager.transform.position.z;
+                    playerManager.transform.position = newPosition;
+                    playerManager.transform.rotation = gunSeatPoint.rotation;
+                    playerManager.transform.SetParent(gunSeatPoint, true);
+                }
 
-                // Disable player movement (handled by PlayerMovement script checking if controlled)
-            Debug.Log("Player is now controlling the gun.");
-        }
-        else
-        {
-            Debug.Log("Player must be Gunner to control this gun!");
-        }
+                Debug.Log("Player is now controlling the gun.");
+            }
+            else
+            {
+                Debug.Log("Player must be Gunner to control this gun!");
+            }
         }
     }
 
@@ -154,9 +195,43 @@ public class ShipGunController : NetworkBehaviour
     {
         if (CurrentPlayer != null && CurrentPlayer.NetworkObjectId == controllingPlayerId.Value)
         {
+            // Re-enable player movement
+            PlayerMovement playerMovement = CurrentPlayer.GetComponent<PlayerMovement>();
+            if (playerMovement != null)
+            {
+                playerMovement.SetMovementDisabled(false);
+            }
+            
+            // Unfreeze player Rigidbody
+            Rigidbody playerRb = CurrentPlayer.GetComponent<Rigidbody>();
+            if (playerRb != null)
+            {
+                playerRb.constraints = RigidbodyConstraints.FreezeRotation;
+            }
+            
+            // Unparent player from gun seat
+            CurrentPlayer.transform.SetParent(null);
+            
+            // Position player slightly behind the gun seat when exiting
+            if (gunSeatPoint != null)
+            {
+                Vector3 exitPos = gunSeatPoint.position;
+                // Exit position relative to the gun seat's local space
+                if (gunSeatPoint.parent != null)
+                {
+                    exitPos = gunSeatPoint.parent.TransformPoint(gunSeatPoint.localPosition + Vector3.down * 1.5f);
+                }
+                else
+                {
+                    exitPos = gunSeatPoint.position + Vector3.down * 1.5f;
+                }
+                exitPos.z = CurrentPlayer.transform.position.z;
+                CurrentPlayer.transform.position = exitPos;
+            }
+            
             controllingPlayerId.Value = 0;
             CurrentPlayer = null;
-        Debug.Log("Player left the gun.");
+            Debug.Log("Player left the gun.");
         }
     }
 
@@ -173,20 +248,30 @@ public class ShipGunController : NetworkBehaviour
     private void AimAtTarget()
     {
         if (gunPivot == null) return;
-        Vector3 dir = targetWorldPosition - gunPivot.position;
-        dir.z = 0f;
+        
+        // Convert target position to local space relative to the turret's parent (ship)
+        Transform parentTransform = gunPivot.parent;
+        if (parentTransform == null) parentTransform = transform;
+        
+        Vector3 localTargetPos = parentTransform.InverseTransformPoint(targetWorldPosition);
+        Vector3 localPivotPos = parentTransform.InverseTransformPoint(gunPivot.position);
+        Vector3 localDir = localTargetPos - localPivotPos;
+        localDir.z = 0f;
 
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        // Calculate angle in local space
+        float angle = Mathf.Atan2(localDir.y, localDir.x) * Mathf.Rad2Deg;
         float targetZRotation = angle - 90f;
 
-        float currentAngle = gunPivot.eulerAngles.z;
-        if (currentAngle > 180f) currentAngle -= 360f;
+        // Get current local rotation
+        float currentLocalAngle = gunPivot.localEulerAngles.z;
+        if (currentLocalAngle > 180f) currentLocalAngle -= 360f;
 
+        // Clamp target angle within limits (in local space)
         float clampedTarget = Mathf.Clamp(targetZRotation, minAngle, maxAngle);
-        float newAngle = Mathf.MoveTowardsAngle(currentAngle, clampedTarget, rotationSpeed * Time.deltaTime);
+        float newLocalAngle = Mathf.MoveTowardsAngle(currentLocalAngle, clampedTarget, rotationSpeed * Time.deltaTime);
         
         // Update local rotation immediately for responsiveness
-        gunPivot.rotation = Quaternion.Euler(0f, 0f, newAngle);
+        gunPivot.localRotation = Quaternion.Euler(0f, 0f, newLocalAngle);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -195,20 +280,32 @@ public class ShipGunController : NetworkBehaviour
         if (gunPivot == null) return;
         targetWorldPosition = targetPos;
         
-        Vector3 dir = targetWorldPosition - gunPivot.position;
-        dir.z = 0f;
+        // Convert target position to local space relative to the turret's parent (ship)
+        Transform parentTransform = gunPivot.parent;
+        if (parentTransform == null) parentTransform = transform;
+        
+        Vector3 localTargetPos = parentTransform.InverseTransformPoint(targetWorldPosition);
+        Vector3 localPivotPos = parentTransform.InverseTransformPoint(gunPivot.position);
+        Vector3 localDir = localTargetPos - localPivotPos;
+        localDir.z = 0f;
 
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        // Calculate angle in local space
+        float angle = Mathf.Atan2(localDir.y, localDir.x) * Mathf.Rad2Deg;
         float targetZRotation = angle - 90f;
 
-        float currentAngle = gunPivot.eulerAngles.z;
-        if (currentAngle > 180f) currentAngle -= 360f;
+        // Get current local rotation
+        float currentLocalAngle = gunPivot.localEulerAngles.z;
+        if (currentLocalAngle > 180f) currentLocalAngle -= 360f;
 
+        // Clamp target angle within limits (in local space)
         float clampedTarget = Mathf.Clamp(targetZRotation, minAngle, maxAngle);
-        float newAngle = Mathf.MoveTowardsAngle(currentAngle, clampedTarget, rotationSpeed * Time.deltaTime);
+        float newLocalAngle = Mathf.MoveTowardsAngle(currentLocalAngle, clampedTarget, rotationSpeed * Time.fixedDeltaTime);
+        
+        // Update local rotation on server
+        gunPivot.localRotation = Quaternion.Euler(0f, 0f, newLocalAngle);
         
         // Update network variable on server (this will sync to all clients)
-        gunRotation.Value = newAngle;
+        gunRotation.Value = newLocalAngle;
     }
 
     private void TryFireGun()

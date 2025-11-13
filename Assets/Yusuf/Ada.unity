@@ -376,6 +376,10 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2418241582806847635, guid: 8153188904318bc499bd41af19afec28, type: 3}
+      propertyPath: rotationSpeed
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3230499522000752235, guid: 8153188904318bc499bd41af19afec28, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 3576671294
@@ -387,6 +391,10 @@ PrefabInstance:
     - target: {fileID: 5740029186143804009, guid: 8153188904318bc499bd41af19afec28, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 934703934
+      objectReference: {fileID: 0}
+    - target: {fileID: 6759260436032532178, guid: 8153188904318bc499bd41af19afec28, type: 3}
+      propertyPath: m_Mass
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6765919136434922344, guid: 8153188904318bc499bd41af19afec28, type: 3}
       propertyPath: GlobalObjectIdHash
