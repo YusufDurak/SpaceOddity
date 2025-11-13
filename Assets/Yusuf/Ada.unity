@@ -352,37 +352,53 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1436791441637515190, guid: 8153188904318bc499bd41af19afec28, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.88
+      objectReference: {fileID: 0}
     - target: {fileID: 1627555487162239394, guid: 8153188904318bc499bd41af19afec28, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 2668980864
+      value: 228829598
       objectReference: {fileID: 0}
     - target: {fileID: 1840937722758244753, guid: 8153188904318bc499bd41af19afec28, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 1281914093
+      value: 3786536192
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169866399863614392, guid: 8153188904318bc499bd41af19afec28, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.8800006
+      objectReference: {fileID: 0}
+    - target: {fileID: 2342696177338090852, guid: 8153188904318bc499bd41af19afec28, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a46b2f51fa6a6a7489b3fe4ab2aff35a, type: 3}
+    - target: {fileID: 2342696177338090852, guid: 8153188904318bc499bd41af19afec28, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3230499522000752235, guid: 8153188904318bc499bd41af19afec28, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3556781154
+      value: 3576671294
       objectReference: {fileID: 0}
     - target: {fileID: 3299234124104010495, guid: 8153188904318bc499bd41af19afec28, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 2728654268
+      value: 1613942571
       objectReference: {fileID: 0}
     - target: {fileID: 5740029186143804009, guid: 8153188904318bc499bd41af19afec28, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 540299756
+      value: 934703934
       objectReference: {fileID: 0}
     - target: {fileID: 6765919136434922344, guid: 8153188904318bc499bd41af19afec28, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3326411677
+      value: 2439282536
       objectReference: {fileID: 0}
     - target: {fileID: 6992928425217336131, guid: 8153188904318bc499bd41af19afec28, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3356602537
+      value: 3179708116
       objectReference: {fileID: 0}
     - target: {fileID: 7847439410143598413, guid: 8153188904318bc499bd41af19afec28, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 967188415
+      value: 2291915241
       objectReference: {fileID: 0}
     - target: {fileID: 8859533871014789636, guid: 8153188904318bc499bd41af19afec28, type: 3}
       propertyPath: m_LocalPosition.x
