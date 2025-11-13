@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Ada/Ada.unity
     guid: f2c5659e97f1a7043851a135b2e90b79
+  - enabled: 1
+    path: Assets/Yusuf/Ada.unity
+    guid: d8a6a3e050bdbd44cb3a582b36aeae5a
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

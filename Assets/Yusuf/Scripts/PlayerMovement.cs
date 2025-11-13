@@ -24,6 +24,24 @@ public class PlayerMovement : NetworkBehaviour
     private Rigidbody rb;
     private Vector2 input;
     private float zLock;     // (Gemini) yLock'tan zLock'a geri değiştirildi
+    
+    // Flag to disable movement when controlling turrets or other equipment
+    private bool isMovementDisabled = false;
+    
+    public void SetMovementDisabled(bool disabled)
+    {
+        isMovementDisabled = disabled;
+        if (disabled)
+        {
+            // Stop any current movement
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector3.zero;
+            }
+        }
+    }
+    
+    public bool IsLockZToInitial => lockZToInitial;
 
     public override void OnNetworkSpawn()
     {
@@ -62,6 +80,9 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Update()
     {
+        // Don't process input if movement is disabled (e.g., controlling turret)
+        if (isMovementDisabled) return;
+        
         // Check if we can control movement
         // Allow movement if:
         // 1. Not networked (no NetworkManager or not connected)
@@ -96,6 +117,9 @@ public class PlayerMovement : NetworkBehaviour
 
     private void FixedUpdate()
     {
+        // Don't process movement if movement is disabled (e.g., controlling turret)
+        if (isMovementDisabled) return;
+        
         // Check if we can control movement
         // Allow movement if:
         // 1. Not networked (no NetworkManager or not connected)
