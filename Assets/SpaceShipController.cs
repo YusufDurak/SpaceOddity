@@ -40,17 +40,19 @@ public class SpaceShipController : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        
+
         rb = GetComponent<Rigidbody>();
         rb.useGravity = false;
         rb.constraints = RigidbodyConstraints.FreezePositionZ |
                          RigidbodyConstraints.FreezeRotationX |
                          RigidbodyConstraints.FreezeRotationY;
-        
-        // Subscribe to control state changes
+
+        rb.interpolation = RigidbodyInterpolation.None; // <-- EKLE
+
         isControlled.OnValueChanged += OnControlStateChanged;
         currentPilotId.OnValueChanged += OnPilotChanged;
     }
+
 
     public override void OnNetworkDespawn()
     {
@@ -193,28 +195,35 @@ public class SpaceShipController : NetworkBehaviour
     private IEnumerator MovePlayerToHelm(PlayerEquipmentManager pilot)
     {
         Vector3 start = pilot.transform.position;
-        Vector3 target = helmSeat.position;
-        target.z = start.z; // keep Z position unchanged
 
-        float duration = 0.4f; // smooth movement duration
+        // Target seat position, but keep Z locked
+        Vector3 target = helmSeat.position;
+        target.z = start.z;
+
+        float duration = 0.4f;
         float elapsed = 0f;
 
-        // Detach first to prevent local offset
-        pilot.transform.SetParent(null);
+        // Detach while keeping world position
+        pilot.transform.SetParent(null, true);
 
-        // Smoothly move to helm
+        // Smoothly move to helm position
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            pilot.transform.position = Vector3.Lerp(start, target, t);
+            Vector3 pos = Vector3.Lerp(start, target, t);
+            pos.z = start.z; // force Z to remain fixed every frame
+            pilot.transform.position = pos;
             yield return null;
         }
 
-        // Snap to final position and lock orientation
+        // Snap to final position
         pilot.transform.position = target;
         pilot.transform.rotation = helmSeat.rotation;
-        pilot.transform.SetParent(transform);
+
+        // Re-parent but preserve world position/rotation
+        pilot.transform.SetParent(transform, true);
     }
+
 
 }
