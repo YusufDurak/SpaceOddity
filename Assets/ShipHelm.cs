@@ -50,34 +50,30 @@ public class ShipHelm : NetworkBehaviour
 
     void Update()
     {
-        // Only check input on clients
         if (!IsClient) return;
-        
-        // Check if local player is in range
+
         if (playerInRange && player != null && player.CurrentRole == RoleType.Pilot)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 if (!ship.IsControlled)
                 {
-                    // Request control from server
                     RequestControlServerRpc(player.NetworkObjectId);
                 }
-                else if (ship.CurrentPilot != null && ship.CurrentPilot.NetworkObjectId == player.NetworkObjectId)
+                else
                 {
-                    // Release control
                     ReleaseControlServerRpc();
                 }
             }
         }
     }
-    
+
+
     [ServerRpc(RequireOwnership = false)]
     private void RequestControlServerRpc(ulong playerNetworkObjectId)
     {
         if (!playerInRange) return;
-        
-        // Verify player is in range and has pilot role
+
         if (player != null && player.NetworkObjectId == playerNetworkObjectId && player.CurrentRole == RoleType.Pilot)
         {
             if (!ship.IsControlled)
@@ -86,16 +82,20 @@ public class ShipHelm : NetworkBehaviour
             }
         }
     }
-    
+
     [ServerRpc(RequireOwnership = false)]
     private void ReleaseControlServerRpc()
     {
-        if (ship.CurrentPilot != null && ship.CurrentPilot.NetworkObjectId == playerInRangeId)
+        if (ship.CurrentPilot != null)
         {
-            ship.EnableControlServerRpc(false, playerInRangeId);
-            }
+            ship.EnableControlServerRpc(false, ship.CurrentPilot.NetworkObjectId);
+        }
     }
-    
+
+
+
+
+
     [ClientRpc]
     private void NotifyPlayerInRangeClientRpc(ulong clientId, bool inRange)
     {

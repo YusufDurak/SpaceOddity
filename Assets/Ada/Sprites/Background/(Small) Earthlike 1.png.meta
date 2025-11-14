@@ -1,15 +1,8 @@
 fileFormatVersion: 2
-guid: 762a9530a0b13e347a9243ca9ffeb514
+guid: b0f0e321bc5550446a26fc8b7e2737fa
 labels:
 - Planet
 - Planets
-AssetOrigin:
-  serializedVersion: 1
-  productId: 27662
-  packageName: 2D Space Kit
-  packageVersion: Initial 2
-  assetPath: Assets/2D Space Kit/Background Elements/Planets/(Small) Earthlike 1.png
-  uploadId: 46238
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -44,18 +37,18 @@ TextureImporter:
   maxTextureSize: 1024
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 16
     mipBias: 0
-    wrapU: 1
-    wrapV: 1
-    wrapW: 1
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
   spriteMode: 1
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
