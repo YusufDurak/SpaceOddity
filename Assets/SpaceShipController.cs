@@ -223,17 +223,31 @@ public class SpaceShipController : NetworkBehaviour
                 PlayerMovement pm = CurrentPilot.GetComponent<PlayerMovement>();
                 if (pm != null) pm.SetMovementDisabled(false);
 
+                Rigidbody prb = CurrentPilot.GetComponent<Rigidbody>();
+                
+                // Store current Z position before unparenting
+                float preservedZ = CurrentPilot.transform.position.z;
+                
+                // Unparent the player first
                 NetworkObject pObj = CurrentPilot.GetComponent<NetworkObject>();
                 pObj.TryRemoveParent();
 
+                // Calculate exit position in world space (behind the helm)
                 Vector3 exitPos = helmSeat.position + transform.right * -1.5f;
-                exitPos.z = CurrentPilot.transform.position.z;
+                exitPos.z = preservedZ;
+                
+                // Set position and rotation in world space
+                // Match the ship's rotation so movement directions align with ship orientation
                 CurrentPilot.transform.position = exitPos;
-                CurrentPilot.transform.rotation = Quaternion.identity;
+                CurrentPilot.transform.rotation = transform.rotation;
 
-                Rigidbody prb = CurrentPilot.GetComponent<Rigidbody>();
+                // Reset physics properties
                 if (prb != null)
                 {
+                    // Reset velocity to prevent unstable movement
+                    prb.linearVelocity = Vector3.zero;
+                    prb.angularVelocity = Vector3.zero;
+                    
                     prb.isKinematic = false;
                     prb.detectCollisions = true;
                     prb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionZ;

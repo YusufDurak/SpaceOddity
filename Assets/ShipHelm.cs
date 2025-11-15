@@ -52,7 +52,14 @@ public class ShipHelm : NetworkBehaviour
     {
         if (!IsClient) return;
 
-        if (playerInRange && player != null && player.CurrentRole == RoleType.Pilot)
+        // Check if local player is the current pilot (can leave helm even if not in trigger)
+        bool isCurrentPilot = ship.IsControlled && ship.CurrentPilot != null && 
+                              ship.CurrentPilot.OwnerClientId == NetworkManager.Singleton.LocalClientId;
+
+        // Check if player is in range and has Pilot role (can take helm)
+        bool canTakeHelm = playerInRange && player != null && player.CurrentRole == RoleType.Pilot;
+
+        if (isCurrentPilot || canTakeHelm)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -60,7 +67,7 @@ public class ShipHelm : NetworkBehaviour
                 {
                     RequestControlServerRpc(player.NetworkObjectId);
                 }
-                else
+                else if (isCurrentPilot)
                 {
                     ReleaseControlServerRpc();
                 }
