@@ -144,10 +144,15 @@ public class PlayerMovement : NetworkBehaviour
         // Hedef hızı PlayerStats'tan al
         float targetSpeed = (stats != null) ? stats.CurrentMoveSpeed : 5f;
 
-        // (Gemini) DÜZELTME: Hareketi X-Y düzlemine geri al
-        // input.y (W/S) -> velocity.y (Yukarı/Aşağı)
-        // input.x (A/D) -> velocity.x (Sağ/Sol)
-        Vector3 targetVelocity = new Vector3(input.x, input.y, 0f) * targetSpeed;
+        // Transform input direction by player's rotation so movement is relative to player's facing direction
+        // This ensures WASD works correctly even after the ship has rotated
+        Vector3 inputDirection = new Vector3(input.x, input.y, 0f);
+        Vector3 worldDirection = transform.TransformDirection(inputDirection);
+        worldDirection.z = 0f; // Keep movement in X-Y plane
+        // Normalize to preserve input magnitude (for diagonal movement), then scale by speed
+        if (worldDirection.sqrMagnitude > 0.01f)
+            worldDirection = worldDirection.normalized * inputDirection.magnitude;
+        Vector3 targetVelocity = worldDirection * targetSpeed;
 
         // (Gemini) Eğer yerçekimi kullanıyorsak (useGravity=true),
         // Y hızı input'tan değil, Rigidbody'nin mevcut Y hızından alınmalı
