@@ -6,7 +6,7 @@ public class BackgroundLayer
     public Transform layerTransform;
     [Range(0f, 1f)]
     public float scrollSpeed = 0.5f;
-    public float spriteWidth = 20f;
+    public float spriteWidth = 20f; // Artık otomatik doldurulacak
 }
 
 public class Parallax : MonoBehaviour
@@ -18,9 +18,27 @@ public class Parallax : MonoBehaviour
 
     private bool initialized = false;
 
+    private void Start()
+    {
+        // Tüm layer'ların sprite genişliğini SpriteRenderer üzerinden hesapla
+        foreach (var layer in layers)
+        {
+            SpriteRenderer sr = layer.layerTransform.GetComponent<SpriteRenderer>();
+
+            if (sr != null)
+            {
+                layer.spriteWidth = sr.bounds.size.x;
+            }
+            else
+            {
+                Debug.LogWarning($"SpriteRenderer not found on {layer.layerTransform.name}! Using default width.");
+            }
+        }
+    }
+
     private void LateUpdate()
     {
-        // Camera not spawned yet  try to find it
+        // Camera not spawned yet, try to find it
         if (cam == null)
         {
             if (Camera.main != null)

@@ -136,22 +136,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0efba2e6eaed4684f881d730bb8fd08f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backgroundElements:
-  - backgroundSprite: {fileID: 7044575003934788231}
-    scrollSpeed: 0.364
-    spriteMaterial: {fileID: 0}
-  - backgroundSprite: {fileID: 4919157203767716450}
-    scrollSpeed: 0.643
-    spriteMaterial: {fileID: 0}
-  - backgroundSprite: {fileID: 6640330397336643247}
-    scrollSpeed: 0.659
-    spriteMaterial: {fileID: 0}
-  - backgroundSprite: {fileID: 812627217282286888}
-    scrollSpeed: 0.685
-    spriteMaterial: {fileID: 0}
-  - backgroundSprite: {fileID: 2627678688345719267}
-    scrollSpeed: 0.852
-    spriteMaterial: {fileID: 0}
+  layers:
+  - layerTransform: {fileID: 6824052283162889121}
+    parallaxStrength: 0.131
+  - layerTransform: {fileID: 8037988886305372199}
+    parallaxStrength: 0.434
+  - layerTransform: {fileID: 5752494201967650992}
+    parallaxStrength: 0.434
+  - layerTransform: {fileID: 2332940278019051951}
+    parallaxStrength: 0.457
 --- !u!1 &3353025251813159268
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,7 +222,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -9
-  m_Sprite: {fileID: 21300000, guid: 762a9530a0b13e347a9243ca9ffeb514, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b0f0e321bc5550446a26fc8b7e2737fa, type: 3}
   m_Color: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -441,7 +434,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.2203, y: 1.2203, z: 1.2203}
+  m_LocalScale: {x: 3.6608999, y: 3.6608999, z: 3.6608999}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 518304728438622129}
