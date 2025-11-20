@@ -240,7 +240,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2679632397089997006}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 0.0001
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -318,6 +318,8 @@ MonoBehaviour:
   stats: {fileID: 7834162367539974260}
   lockZToInitial: 1
   useGravity: 0
+  spriteRenderer: {fileID: 4728758489984090055}
+  spriteTransform: {fileID: 367848115972154504}
 --- !u!135 &3570333126091041076
 SphereCollider:
   m_ObjectHideFlags: 0
