@@ -8,6 +8,8 @@ public class NetcodeUI : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private Button startHostButton;
     [SerializeField] private Button startClientButton;
+
+    [SerializeField] private GameObject NetcodePanel;
  
 
     private void Awake()
@@ -21,6 +23,9 @@ public class NetcodeUI : MonoBehaviour
         if (NetworkManager.Singleton.StartHost())
         {
             Debug.Log(" Host started");
+
+            NetcodePanel.SetActive(false);
+
         }
         else
         {
@@ -34,6 +39,7 @@ public class NetcodeUI : MonoBehaviour
         {
            
             Debug.Log(" Connecting to server...");
+            NetcodePanel.SetActive(false);
         }
         else
         {

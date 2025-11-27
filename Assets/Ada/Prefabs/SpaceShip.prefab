@@ -3382,7 +3382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3576671294
+  GlobalObjectIdHash: 887346024
   InScenePlacedSourceGlobalObjectIdHash: 2538169523
   DeferredDespawnTick: 0
   Ownership: 1
@@ -3588,7 +3588,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1613942571
+  GlobalObjectIdHash: 819695868
   InScenePlacedSourceGlobalObjectIdHash: 2538169523
   DeferredDespawnTick: 0
   Ownership: 1
@@ -3741,7 +3741,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2439282536
+  GlobalObjectIdHash: 2187564213
   InScenePlacedSourceGlobalObjectIdHash: 2538169523
   DeferredDespawnTick: 0
   Ownership: 1
@@ -5244,7 +5244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3786536192
+  GlobalObjectIdHash: 470993185
   InScenePlacedSourceGlobalObjectIdHash: 2538169523
   DeferredDespawnTick: 0
   Ownership: 1
@@ -6132,7 +6132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 228829598
+  GlobalObjectIdHash: 1531588818
   InScenePlacedSourceGlobalObjectIdHash: 2538169523
   DeferredDespawnTick: 0
   Ownership: 1
@@ -6466,7 +6466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 934703934
+  GlobalObjectIdHash: 2538169523
   InScenePlacedSourceGlobalObjectIdHash: 2538169523
   DeferredDespawnTick: 0
   Ownership: 1
@@ -6492,9 +6492,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  moveSpeed: 10
   rotationSpeed: 2
   helmSeat: {fileID: 6453643626752990325}
+  slowSpeed: 2
+  normalSpeed: 5
+  fastSpeed: 10
+  pilotUI:
+    speedFillBar: {fileID: 0}
+  pilotUICanvas: {fileID: 0}
+  currentSpeedMode: 0
 --- !u!54 &6759260436032532178
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6630,7 +6636,7 @@ PrefabInstance:
       objectReference: {fileID: 3979449618219765757}
     - target: {fileID: 5129989233547198790, guid: 3c8d53bfb24fc34458b8d3a17dd81662, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3179708116
+      value: 4186376123
       objectReference: {fileID: 0}
     - target: {fileID: 5129989233547198790, guid: 3c8d53bfb24fc34458b8d3a17dd81662, type: 3}
       propertyPath: SceneMigrationSynchronization
@@ -6774,7 +6780,7 @@ PrefabInstance:
       objectReference: {fileID: 3037888056763546436}
     - target: {fileID: 5129989233547198790, guid: 3c8d53bfb24fc34458b8d3a17dd81662, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 2291915241
+      value: 3499181558
       objectReference: {fileID: 0}
     - target: {fileID: 5129989233547198790, guid: 3c8d53bfb24fc34458b8d3a17dd81662, type: 3}
       propertyPath: SceneMigrationSynchronization
